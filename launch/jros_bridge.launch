@@ -1,0 +1,21 @@
+<launch>
+    <arg name="mapfile" default="$(find turtlebot3_navigation)/maps/map.yaml" />
+
+    <!-- Gazebo simulation -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch"/>
+
+    <!-- Turtlebot3 Navigation -->
+    <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch" >
+        <arg name="map_file" value="$(arg mapfile)" />
+    </include>
+
+    <!-- JROS bridge makes communication with JaCaMo easier -->
+    <node name="jros_bridge" type="jros_bridge.py" pkg="ros_jacamo_self_adapt">
+        <param name="/jros_bridge/pose_topic" value="/amcl_pose" />
+        <param name="/jros_bridge/occupancy_topic" value="/move_base/global_costmap/costmap" />
+    </node>
+
+    <!-- rosbridge websocket server to talk to jrosbridge in JaCaMo -->
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+</launch>
